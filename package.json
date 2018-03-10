@@ -2,8 +2,10 @@
   "name": "telegram-upvoter",
   "version": "1.0.0",
   "description": "A Telegram bot to upvote about anything",
-  "main": "index.js",
+  "main": "bot.js",
   "scripts": {
+    "start": "node bot.js",
+    "start-dev": "nodemon --watch /usr/src/app",
     "test": "echo \"Error: no test specified\" && exit 1"
   },
   "repository": {
@@ -18,5 +20,8 @@
   "homepage": "https://github.com/badouralix/telegram-upvoter#readme",
   "dependencies": {
     "telegraf": "^3.19.0"
+  },
+  "devDependencies": {
+    "nodemon": "^1.17.1"
   }
 }
