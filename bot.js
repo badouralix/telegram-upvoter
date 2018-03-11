@@ -1,6 +1,8 @@
 const Telegraf = require('telegraf');
 const _ = require('lodash');
 
+const bookshelf = require('./model');
+
 const bot = new Telegraf(process.env.BOT_TOKEN)
 
 // Timeit middleware
@@ -55,6 +57,4 @@ bot.on('edited_message', (ctx) => {
 
 // Handle message delete
 
-// Start bot
-console.log('Starting bot now');
-bot.startPolling();
+module.exports = { bot };
