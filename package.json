@@ -19,6 +19,7 @@
   },
   "homepage": "https://github.com/badouralix/telegram-upvoter#readme",
   "dependencies": {
+    "lodash": "^4.17.5",
     "telegraf": "^3.19.0"
   },
   "devDependencies": {
