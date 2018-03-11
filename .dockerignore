@@ -2,4 +2,4 @@
 *
 !app/
 app/node_modules
-!migration/
+!migrations/
