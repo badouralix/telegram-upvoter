@@ -3,9 +3,9 @@ exports.up = function(knex, Promise) {
     return Promise.all([
         knex.schema.createTable('votes', (table) => {
             table.increments();
-            table.integer('group');
-            table.integer('message');
-            table.integer('voter');
+            table.integer('chat_id');
+            table.integer('message_id');
+            table.integer('voter_id');
             table.string('votee');
             table.timestamps();
         }),

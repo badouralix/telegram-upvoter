@@ -57,9 +57,9 @@ bot.start((ctx) =>
 // Handle /upvote command (original and forward)
 bot.command('upvote', async (ctx) => {
     const vote = new Vote();
-    vote.set('group', ctx.chat.id);
-    vote.set('message', ctx.message.message_id);
-    vote.set('voter', ctx.from.id);
+    vote.set('chat_id', ctx.chat.id);
+    vote.set('message_id', ctx.message.message_id);
+    vote.set('voter_id', ctx.from.id);
     vote.set('votee', ctx.message.argv[1]);
 
     const record = await vote.save();
@@ -71,7 +71,7 @@ bot.command('upvote', async (ctx) => {
  * Handle /results command.
  */
 bot.command('results', async (ctx) => {
-    const records = await Vote.byGroup( ctx.chat.id );
+    const records = await Vote.byChatId( ctx.chat.id );
     const results = _.mapValues( _.groupBy( _.map(records.models, 'attributes'), 'votee' ), 'length');
     const display = JSON.stringify(results);
     return ctx.reply(`Results:\n\t${display}`);

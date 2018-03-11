@@ -13,9 +13,9 @@ class Vote extends bookshelf.Model {
         return true;
     }
 
-    static byGroup(group) {
+    static byChatId(chatId) {
         return this.forge()
-                   .query({ where: { group: group } })
+                   .query({ where: { chat_id: chatId } })
                    .fetchAll();
     }
 }
