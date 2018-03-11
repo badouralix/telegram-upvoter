@@ -13,7 +13,7 @@ const _ = require('lodash');
 
 const { Vote } = require('./model');
 
-const bot = new Telegraf(process.env.BOT_TOKEN)
+const bot = new Telegraf(process.env.BOT_TOKEN, {username: process.env.BOT_USERNAME});
 
 // Timeit middleware
 bot.use(async (ctx, next) => {
@@ -24,7 +24,6 @@ bot.use(async (ctx, next) => {
 });
 
 // Middleware to provide argc and argv
-// TODO: remove @botname from argv[0] string
 bot.use((ctx, next) => {
     if (ctx.message) {
         ctx.message.argv = _.split(ctx.message.text, ' ');
