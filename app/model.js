@@ -13,23 +13,11 @@ class Vote extends bookshelf.Model {
         return true;
     }
 
-    static byVotee(votee) {
-        return this.forge().query({where:{ votee: votee }}).fetch();
+    static byGroup(group) {
+        return this.forge()
+                   .query({ where: { group: group } })
+                   .fetchAll();
     }
 }
 
-var vote = new Vote();
-vote.set('group', 0);
-vote.set('message', 0);
-vote.set('voter', 0);
-vote.set('votee', '@yolovotee');
-
-vote.save().then(function(u) {
-    console.log('Vote saved:', u.get('voter'));
-});
-
-Vote.byVotee('@yolovotee').then(function(u) {
-    console.log('Got votee:', u.get('votee'));
-});
-
-module.exports = { bookshelf };
+module.exports = { Vote };

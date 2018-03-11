@@ -11,7 +11,7 @@ const logger = require('winston');
 const Telegraf = require('telegraf');
 const _ = require('lodash');
 
-const bookshelf = require('./model');
+const { Vote } = require('./model');
 
 const bot = new Telegraf(process.env.BOT_TOKEN)
 
@@ -56,8 +56,26 @@ bot.start((ctx) =>
 );
 
 // Handle /upvote command (original and forward)
-bot.command('upvote', (ctx) => {
-    return ctx.reply(`This is an upvote for ${ctx.message.argv[1]}`);
+bot.command('upvote', async (ctx) => {
+    const vote = new Vote();
+    vote.set('group', ctx.chat.id);
+    vote.set('message', ctx.message.message_id);
+    vote.set('voter', ctx.from.id);
+    vote.set('votee', ctx.message.argv[1]);
+
+    const record = await vote.save();
+
+    return ctx.reply(`This is an upvote for ${record.get('votee')}`);
+});
+
+/**
+ * Handle /results command.
+ */
+bot.command('results', async (ctx) => {
+    const records = await Vote.byGroup( ctx.chat.id );
+    const results = _.mapValues( _.groupBy( _.map(records.models, 'attributes'), 'votee' ), 'length');
+    const display = JSON.stringify(results);
+    return ctx.reply(`Results:\n\t${display}`);
 });
 
 // Handle message update
