@@ -10,7 +10,10 @@ services:
       - /etc/localtime:/etc/localtime:ro
 
   bot:
-    build: .
+    build:
+      context: .
+      args:
+        NODE_ENV: dev
     command: npm run start-dev
     env_file: token.env
     volumes:
