@@ -5,7 +5,7 @@ WORKDIR /usr/src/app
 
 ARG NODE_ENV=production
 
-COPY package.json package-lock.json /usr/src/app/
+COPY . /usr/src/app/
 RUN npm install && npm cache clean --force
 
 CMD [ "npm", "start" ]
