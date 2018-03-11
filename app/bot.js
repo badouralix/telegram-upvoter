@@ -1,3 +1,13 @@
+/**
+ * @file app/bot.js
+ *
+ * @description
+ * Core file of bot.
+ *****************************************************************************/
+
+'use strict';
+
+const logger = require('winston');
 const Telegraf = require('telegraf');
 const _ = require('lodash');
 
@@ -9,8 +19,8 @@ const bot = new Telegraf(process.env.BOT_TOKEN)
 bot.use(async (ctx, next) => {
     const start = new Date()
     await next()
-    const ms = new Date() - start
-    console.log('Response time %sms', ms)
+    const duration = new Date() - start
+    logger.info(`Response time ${duration}ms`);
 });
 
 // Middleware to provide argc and argv
@@ -31,12 +41,12 @@ bot.use((ctx, next) => {
 
 // Debug middleware
 bot.use((ctx, next) => {
-    console.log(`ctx.chat:          ${JSON.stringify(ctx.chat)}`);
-    console.log(`ctx.from:          ${JSON.stringify(ctx.from)}`);
-    console.log(`ctx.match:         ${JSON.stringify(ctx.match)}`);
-    console.log(`ctx.update:        ${JSON.stringify(ctx.update)}`);
-    console.log(`ctx.message:       ${JSON.stringify(ctx.message)}`);
-    console.log(`ctx.editedMessage: ${JSON.stringify(ctx.editedMessage)}`);
+    logger.debug(`ctx.chat:          ${JSON.stringify(ctx.chat)}`);
+    logger.debug(`ctx.from:          ${JSON.stringify(ctx.from)}`);
+    logger.debug(`ctx.match:         ${JSON.stringify(ctx.match)}`);
+    logger.debug(`ctx.update:        ${JSON.stringify(ctx.update)}`);
+    logger.debug(`ctx.message:       ${JSON.stringify(ctx.message)}`);
+    logger.debug(`ctx.editedMessage: ${JSON.stringify(ctx.editedMessage)}`);
     next();
 });
 

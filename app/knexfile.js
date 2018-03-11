@@ -1,5 +1,5 @@
 /**
- * @file knexfile.js
+ * @file app/knexfile.js
  *
  * @description
  * Knex config file. See tutorial:
