@@ -19,7 +19,7 @@ services:
     command: npm run start-dev
     env_file: token.env
     volumes:
-      - .:/usr/src/app:ro
+      - .:/usr/src:ro
       - /usr/src/app/node_modules
     depends_on:
       - db

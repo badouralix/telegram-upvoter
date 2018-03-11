@@ -1,0 +1,5 @@
+# Ignore all but src/
+*
+!app/
+app/node_modules
+!migration/
