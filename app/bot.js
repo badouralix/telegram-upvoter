@@ -89,7 +89,10 @@ bot.command('results', async (ctx) => {
 
 // Handle message update
 bot.on('edited_message', async (ctx) => {
-    if (ctx.param.argv[0].match(`^\/upvote(@${process.env.BOT_USERNAME})?$`)) {
+    if (ctx.param.argc === 2
+            && ctx.param.argv[0].match(`^\/upvote(@${process.env.BOT_USERNAME})?$`)
+            && ctx.param.argv[1].match(/^@?\w+$/))
+    {
         // Bookshelf doesn't support composite primary key yet
         // See: https://github.com/bookshelf/bookshelf/issues/1664
         await (new Vote()).where({chat_id: ctx.chat.id, message_id: ctx.editedMessage.message_id}).save({votee: ctx.param.argv[1]}, {method: 'update', patch: true});
