@@ -25,14 +25,13 @@ bot.use(async (ctx, next) => {
 
 // Middleware to provide argc and argv
 bot.use((ctx, next) => {
-    if (ctx.message) {
-        ctx.message.argv = _.split(ctx.message.text, ' ');
-        ctx.message.argc = ctx.message.argv.length;
+    if (ctx.editedMessage) {
+        ctx.message = ctx.editedMessage;
     }
 
-    if (ctx.editedMessage) {
-        ctx.editedMessage.argv = _.split(ctx.editedMessage.text, ' ');
-        ctx.editedMessage.argc = ctx.editedMessage.argv.length;
+    if (ctx.message) {
+        ctx.message.argv = _.split(ctx.message.text, /\s/);
+        ctx.message.argc = ctx.message.argv.length;
     }
 
     next();
@@ -40,11 +39,10 @@ bot.use((ctx, next) => {
 
 // Debug middleware
 bot.use((ctx, next) => {
-    logger.debug(`ctx.chat:          ${JSON.stringify(ctx.chat)}`);
-    logger.debug(`ctx.from:          ${JSON.stringify(ctx.from)}`);
-    logger.debug(`ctx.update:        ${JSON.stringify(ctx.update)}`);
-    logger.debug(`ctx.message:       ${JSON.stringify(ctx.message)}`);
-    logger.debug(`ctx.editedMessage: ${JSON.stringify(ctx.editedMessage)}`);
+    logger.debug(`ctx.chat:    ${JSON.stringify(ctx.chat)}`);
+    logger.debug(`ctx.from:    ${JSON.stringify(ctx.from)}`);
+    logger.debug(`ctx.update:  ${JSON.stringify(ctx.update)}`);
+    logger.debug(`ctx.message: ${JSON.stringify(ctx.message)}`);
     next();
 });
 
@@ -82,10 +80,10 @@ bot.command('results', async (ctx) => {
 
 // Handle message update
 bot.on('edited_message', async (ctx) => {
-    if (ctx.editedMessage.argv[0].match(`^\/upvote(@${process.env.BOT_USERNAME})?$`)) {
+    if (ctx.message.argv[0].match(`^\/upvote(@${process.env.BOT_USERNAME})?$`)) {
         // Bookshelf doesn't support composite primary key yet
         // See: https://github.com/bookshelf/bookshelf/issues/1664
-        await (new Vote()).where({chat_id: ctx.chat.id, message_id: ctx.editedMessage.message_id}).save({votee: ctx.editedMessage.argv[1]}, {method: 'update', patch: true});
+        await (new Vote()).where({chat_id: ctx.chat.id, message_id: ctx.message.message_id}).save({votee: ctx.message.argv[1]}, {method: 'update', patch: true});
     }
 });
 
