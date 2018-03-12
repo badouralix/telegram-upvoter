@@ -65,7 +65,7 @@ bot.command('upvote', async (ctx) => {
     try {
         const record = await vote.save();
         return ctx.reply(`This is an upvote for ${record.get('votee')}`);
-    } finally {
+    } catch (err) {
         console.debug('Missing votee detected')
         return ctx.replyWithMarkdown('Usage: _/upvote @username_');
     }
@@ -82,8 +82,12 @@ bot.command('results', async (ctx) => {
 });
 
 // Handle message update
-bot.on('edited_message', (ctx) => {
-    return ctx.reply('Message edited');
+bot.on('edited_message', async (ctx) => {
+    if (ctx.editedMessage.argv[0].match(`^\/upvote(@${process.env.BOT_USERNAME})?$`)) {
+        // Bookshelf doesn't support composite primary key yet
+        // See: https://github.com/bookshelf/bookshelf/issues/1664
+        await (new Vote()).where({chat_id: ctx.chat.id, message_id: ctx.editedMessage.message_id}).save({votee: ctx.editedMessage.argv[1]}, {method: 'update', patch: true});
+    }
 });
 
 // Handle message delete
