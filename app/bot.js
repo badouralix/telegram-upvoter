@@ -42,7 +42,6 @@ bot.use((ctx, next) => {
 bot.use((ctx, next) => {
     logger.debug(`ctx.chat:          ${JSON.stringify(ctx.chat)}`);
     logger.debug(`ctx.from:          ${JSON.stringify(ctx.from)}`);
-    logger.debug(`ctx.match:         ${JSON.stringify(ctx.match)}`);
     logger.debug(`ctx.update:        ${JSON.stringify(ctx.update)}`);
     logger.debug(`ctx.message:       ${JSON.stringify(ctx.message)}`);
     logger.debug(`ctx.editedMessage: ${JSON.stringify(ctx.editedMessage)}`);
