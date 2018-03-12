@@ -62,9 +62,13 @@ bot.command('upvote', async (ctx) => {
     vote.set('voter_id', ctx.from.id);
     vote.set('votee', ctx.message.argv[1]);
 
-    const record = await vote.save();
-
-    return ctx.reply(`This is an upvote for ${record.get('votee')}`);
+    try {
+        const record = await vote.save();
+        return ctx.reply(`This is an upvote for ${record.get('votee')}`);
+    } finally {
+        console.debug('Missing votee detected')
+        return ctx.replyWithMarkdown('Usage: _/upvote @username_');
+    }
 });
 
 /**
