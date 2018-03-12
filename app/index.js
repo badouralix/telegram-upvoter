@@ -11,7 +11,7 @@ const waitOn = require('wait-on');
 const logger = require('winston');
 
 logger.configure({
-    level: 'debug',
+    level: process.env.LOG_LEVEL || 'info',
     format: logger.format.combine(
         logger.format.splat(),
         logger.format.printf((info) => `${info.level}: ${info.message}`),

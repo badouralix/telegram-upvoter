@@ -18,6 +18,8 @@ services:
         NODE_ENV: dev
     command: npm run start-dev
     env_file: token.env
+    environment:
+      LOG_LEVEL: debug
     volumes:
       - .:/usr/src:ro
       - /usr/src/app/node_modules
