@@ -15,30 +15,32 @@ const { Vote } = require('./model');
 
 const bot = new Telegraf(process.env.BOT_TOKEN, {username: process.env.BOT_USERNAME});
 
-// Timeit middleware
-bot.use(async (ctx, next) => {
-    const start = new Date()
-    await next()
-    const duration = new Date() - start
-    logger.info(`Response time ${duration}ms`);
-});
-
 // Middleware to provide argc and argv
 bot.use((ctx, next) => {
     if (ctx.message) {
         ctx.param = new Object({
             argv: _.split(ctx.message.text, /\s/),
         });
-        ctx.param.argc = ctx.param.argv.length;
     }
     else if (ctx.editedMessage) {
         ctx.param = new Object({
             argv: _.split(ctx.editedMessage.text, /\s/),
         });
-        ctx.param.argc = ctx.param.argv.length;
     }
 
-    next();
+    // Only follow up on commands
+    if (ctx.param.argv[0].match(/^\//)) {
+        ctx.param.argc = ctx.param.argv.length;
+        next();
+    }
+});
+
+// Timeit middleware
+bot.use(async (ctx, next) => {
+    const start = new Date()
+    await next()
+    const duration = new Date() - start
+    logger.info(`Response time ${duration}ms`);
 });
 
 // Debug middleware
