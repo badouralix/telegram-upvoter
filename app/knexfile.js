@@ -12,10 +12,10 @@ module.exports = {
 
 	client: 'postgresql',
 	connection: {
-		host:     'db',
-		database: 'telegram_upvoter',
-		user:     'postgres',
-		password: 'securepassword'
+		host:     process.env.POSTGRES_HOST,
+		database: process.env.POSTGRES_DB,
+		user:     process.env.POSTGRES_USER,
+		password: process.env.POSTGRES_PASSWORD,
 	},
 	pool: {
 		min: 2,

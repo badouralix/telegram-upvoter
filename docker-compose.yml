@@ -5,8 +5,9 @@ services:
     image: postgres:10-alpine
     environment:
       PGDATA: /var/lib/postgresql/data/pgdata
-      POSTGRES_PASSWORD: securepassword
       POSTGRES_DB: telegram_upvoter
+      POSTGRES_USER: telegram_upvoter
+      POSTGRES_PASSWORD: securepassword
     volumes:
       - /var/lib/postgresql/data/pgdata
       - /etc/localtime:/etc/localtime:ro
@@ -20,8 +21,13 @@ services:
     env_file: token.env
     environment:
       LOG_LEVEL: debug
+      POSTGRES_HOST: db
+      POSTGRES_DB: telegram_upvoter
+      POSTGRES_USER: telegram_upvoter
+      POSTGRES_PASSWORD: securepassword
     volumes:
       - .:/usr/src:ro
       - /usr/src/app/node_modules
+      - /etc/localtime:/etc/localtime:ro
     depends_on:
       - db
