@@ -25,13 +25,17 @@ bot.use(async (ctx, next) => {
 
 // Middleware to provide argc and argv
 bot.use((ctx, next) => {
-    if (ctx.editedMessage) {
-        ctx.message = ctx.editedMessage;
-    }
-
     if (ctx.message) {
-        ctx.message.argv = _.split(ctx.message.text, /\s/);
-        ctx.message.argc = ctx.message.argv.length;
+        ctx.param = new Object({
+            argv: _.split(ctx.message.text, /\s/),
+        });
+        ctx.param.argc = ctx.param.argv.length;
+    }
+    else if (ctx.editedMessage) {
+        ctx.param = new Object({
+            argv: _.split(ctx.editedMessage.text, /\s/),
+        });
+        ctx.param.argc = ctx.param.argv.length;
     }
 
     next();
@@ -41,8 +45,8 @@ bot.use((ctx, next) => {
 bot.use((ctx, next) => {
     logger.debug(`ctx.chat:    ${JSON.stringify(ctx.chat)}`);
     logger.debug(`ctx.from:    ${JSON.stringify(ctx.from)}`);
+    logger.debug(`ctx.param:   ${JSON.stringify(ctx.param)}`);
     logger.debug(`ctx.update:  ${JSON.stringify(ctx.update)}`);
-    logger.debug(`ctx.message: ${JSON.stringify(ctx.message)}`);
     next();
 });
 
@@ -53,18 +57,23 @@ bot.start((ctx) =>
 
 // Handle /upvote command (original and forward)
 bot.command('upvote', async (ctx) => {
+    // Check parameters
+    if (ctx.param.argc !== 2 || ! ctx.param.argv[1].match(/^@?\w+$/)) {
+        console.debug('Invalid parameters detected');
+        return ctx.replyWithMarkdown('Usage: _/upvote @username_');
+    }
+
     const vote = new Vote();
     vote.set('chat_id', ctx.chat.id);
     vote.set('message_id', ctx.message.message_id);
     vote.set('voter_id', ctx.from.id);
-    vote.set('votee', ctx.message.argv[1]);
+    vote.set('votee', ctx.param.argv[1]);
 
     try {
         const record = await vote.save();
         return ctx.reply(`This is an upvote for ${record.get('votee')}`);
     } catch (err) {
-        console.debug('Missing votee detected')
-        return ctx.replyWithMarkdown('Usage: _/upvote @username_');
+        console.debug(err);
     }
 });
 
@@ -80,10 +89,10 @@ bot.command('results', async (ctx) => {
 
 // Handle message update
 bot.on('edited_message', async (ctx) => {
-    if (ctx.message.argv[0].match(`^\/upvote(@${process.env.BOT_USERNAME})?$`)) {
+    if (ctx.param.argv[0].match(`^\/upvote(@${process.env.BOT_USERNAME})?$`)) {
         // Bookshelf doesn't support composite primary key yet
         // See: https://github.com/bookshelf/bookshelf/issues/1664
-        await (new Vote()).where({chat_id: ctx.chat.id, message_id: ctx.message.message_id}).save({votee: ctx.message.argv[1]}, {method: 'update', patch: true});
+        await (new Vote()).where({chat_id: ctx.chat.id, message_id: ctx.editedMessage.message_id}).save({votee: ctx.param.argv[1]}, {method: 'update', patch: true});
     }
 });
 
