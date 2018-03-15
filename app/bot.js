@@ -54,7 +54,7 @@ bot.use((ctx, next) => {
 
 // Handle /start command
 bot.start((ctx) =>
-    ctx.reply('This message explains how to use me.')
+    ctx.reply('Add me to a Telegram group.')
 );
 
 // Handle /upvote command (original and forward)
