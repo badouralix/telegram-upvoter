@@ -37,4 +37,4 @@ echo "      org.label-schema.vcs-url=$VCS_URL \\"               >> Dockerfile
 echo "      org.label-schema.schema-version=1.0.0-rc.1"         >> Dockerfile
 
 # Finish pre_build hook
-echo "Successful dockerfile patching"
+echo "Successfully patched dockerfile"
