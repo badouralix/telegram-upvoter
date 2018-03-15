@@ -69,7 +69,7 @@ bot.command('upvote', async (ctx) => {
     vote.set('chat_id', ctx.chat.id);
     vote.set('message_id', ctx.message.message_id);
     vote.set('voter_id', ctx.from.id);
-    vote.set('votee', ctx.param.argv[1]);
+    vote.set('votee', ctx.param.argv[1].replace(/^@?(\w+)$/, '$1'));
 
     try {
         const record = await vote.save();
@@ -97,7 +97,8 @@ bot.on('edited_message', async (ctx) => {
     {
         // Bookshelf doesn't support composite primary key yet
         // See: https://github.com/bookshelf/bookshelf/issues/1664
-        await (new Vote()).where({chat_id: ctx.chat.id, message_id: ctx.editedMessage.message_id}).save({votee: ctx.param.argv[1]}, {method: 'update', patch: true});
+        await (new Vote()).where({chat_id: ctx.chat.id, message_id: ctx.editedMessage.message_id})
+                          .save({votee: ctx.param.argv[1].replace(/^@?(\w+)$/, '$1')}, {method: 'update', patch: true});
     }
 });
 
