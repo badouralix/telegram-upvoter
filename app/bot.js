@@ -84,8 +84,8 @@ bot.command('upvote', async (ctx) => {
  */
 bot.command('results', async (ctx) => {
     const records = await Vote.byChatId( ctx.chat.id );
-    const results = _.sortBy( _.map( _.groupBy( _.map(records.models, 'attributes'), 'votee' ), (voters, votee) => [votee, voters.length]), [o => -o[1], o => o[0]]);
-    const display = JSON.stringify(results);
+    const results = _.sortBy( _.map( _.groupBy( _.map(records.models, 'attributes'), 'votee' ), (voters, votee) => new Object({votee: votee, votes: voters.length})), [o => -o.votes, 'votee']);
+    const display = _.reduce(results, (acc, o) => `${acc}\n${o.votee}: ${o.votes}`, '');
     return ctx.reply(`${display}`);
 });
 
