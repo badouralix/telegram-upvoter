@@ -52,12 +52,16 @@ bot.use((ctx, next) => {
     next();
 });
 
-// Handle /start command
+/**
+ * Handle /start command
+ */
 bot.start((ctx) =>
     ctx.reply('Add me to a Telegram group.')
 );
 
-// Handle /upvote command (original and forward)
+/**
+ * Handle /upvote command (original and forward)
+ */
 bot.command('upvote', async (ctx) => {
     // Check parameters
     if (ctx.param.argc !== 2 || ! ctx.param.argv[1].match(/^@?\w+$/)) {
@@ -70,6 +74,7 @@ bot.command('upvote', async (ctx) => {
     vote.set('message_id', ctx.message.message_id);
     vote.set('voter_id', ctx.from.id);
     vote.set('votee', ctx.param.argv[1].replace(/^@?(\w+)$/, '$1'));
+    vote.set('type', 'upvote');
 
     try {
         const record = await vote.save();
@@ -80,12 +85,39 @@ bot.command('upvote', async (ctx) => {
 });
 
 /**
+ * Handle /downvote command (original and forward)
+ */
+bot.command('downvote', async (ctx) => {
+    // Check parameters
+    if (ctx.param.argc !== 2 || ! ctx.param.argv[1].match(/^@?\w+$/)) {
+        console.debug('Invalid parameters detected');
+        return ctx.replyWithMarkdown('Usage: _/downvote @username_');
+    }
+
+    const vote = new Vote();
+    vote.set('chat_id', ctx.chat.id);
+    vote.set('message_id', ctx.message.message_id);
+    vote.set('voter_id', ctx.from.id);
+    vote.set('votee', ctx.param.argv[1].replace(/^@?(\w+)$/, '$1'));
+    vote.set('type', 'downvote');
+
+    try {
+        const record = await vote.save();
+        return ctx.reply(`This is a downvote for ${record.get('votee')}`);
+    } catch (err) {
+        console.debug(err);
+    }
+});
+
+/**
  * Handle /results command.
  */
 bot.command('results', async (ctx) => {
     const records = await Vote.byChatId( ctx.chat.id );
-    const results = _.sortBy( _.map( _.groupBy( _.map(records.models, 'attributes'), 'votee' ), (voters, votee) => new Object({votee: votee, votes: voters.length})), [o => -o.votes, 'votee']);
-    const display = _.reduce(results, (acc, o) => `${acc}\n${o.votee}: ${o.votes}`, '');
+    logger.debug(JSON.stringify(records));
+    const results = _.sortBy( _.map(records.models, 'attributes'), [o => o.downvotes - o.upvotes, o => -o.upvotes, 'votee']);
+    logger.debug(JSON.stringify(results));
+    const display = _.reduce(results, (acc, o) => `${acc}\n${o.votee}: ${o.upvotes - o.downvotes}`, '');
     return ctx.reply(`${display}`);
 });
 
@@ -98,7 +130,17 @@ bot.on('edited_message', async (ctx) => {
         // Bookshelf doesn't support composite primary key yet
         // See: https://github.com/bookshelf/bookshelf/issues/1664
         await (new Vote()).where({chat_id: ctx.chat.id, message_id: ctx.editedMessage.message_id})
-                          .save({votee: ctx.param.argv[1].replace(/^@?(\w+)$/, '$1')}, {method: 'update', patch: true});
+                          .save({votee: ctx.param.argv[1].replace(/^@?(\w+)$/, '$1'), type: 'upvote'}, {method: 'update', patch: true});
+    }
+
+    else if (ctx.param.argc === 2
+            && ctx.param.argv[0].match(`^\/downvote(@${process.env.BOT_USERNAME})?$`)
+            && ctx.param.argv[1].match(/^@?\w+$/))
+    {
+        // Bookshelf doesn't support composite primary key yet
+        // See: https://github.com/bookshelf/bookshelf/issues/1664
+        await (new Vote()).where({chat_id: ctx.chat.id, message_id: ctx.editedMessage.message_id})
+                          .save({votee: ctx.param.argv[1].replace(/^@?(\w+)$/, '$1'), type: 'downvote'}, {method: 'update', patch: true});
     }
 });
 

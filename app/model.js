@@ -15,8 +15,15 @@ class Vote extends bookshelf.Model {
 
     static byChatId(chatId) {
         return this.forge()
-                   .query({ where: { chat_id: chatId } })
-                   .fetchAll();
+                   .query((qb) => {
+                       qb.where({ chat_id: chatId });
+                       qb.groupBy('votee');
+                   })
+                   .fetchAll({columns: [
+                       'votee',
+                       knex.raw('COUNT(*) FILTER (WHERE type = \'upvote\') AS upvotes'),
+                       knex.raw('COUNT(*) FILTER (WHERE type = \'downvote\') AS downvotes')
+                   ]});
     }
 }
 
