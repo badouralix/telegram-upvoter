@@ -12,6 +12,7 @@ echo " - COMMIT_MSG=$COMMIT_MSG"
 echo " - DOCKER_REPO=$DOCKER_REPO"
 echo " - DOCKERFILE_PATH=$DOCKERFILE_PATH"
 echo " - CACHE_TAG=$CACHE_TAG"
+echo " - DOCKER_TAG=$DOCKER_TAG"
 echo " - IMAGE_NAME=$IMAGE_NAME"
 
 # Set custom envvars
@@ -30,11 +31,11 @@ echo " - VCS_REF=$VCS_REF"
 echo " - VCS_URL=$VCS_URL"
 
 # Patch the Dockerfile ( see http://label-schema.org/ )
-echo "LABEL org.label-schema.build-date=$BUILD_DATE \\"         >> $DOCKERFILE_PATH
-echo "      org.label-schema.docker.context=$DOCKER_CONTEXT \\" >> $DOCKERFILE_PATH
-echo "      org.label-schema.vcs-ref=$VCS_REF \\"               >> $DOCKERFILE_PATH
-echo "      org.label-schema.vcs-url=$VCS_URL \\"               >> $DOCKERFILE_PATH
-echo "      org.label-schema.schema-version=1.0.0-rc.1"         >> $DOCKERFILE_PATH
+echo "LABEL org.label-schema.build-date=$BUILD_DATE \\"         >> Dockerfile
+echo "      org.label-schema.docker.context=$DOCKER_CONTEXT \\" >> Dockerfile
+echo "      org.label-schema.vcs-ref=$VCS_REF \\"               >> Dockerfile
+echo "      org.label-schema.vcs-url=$VCS_URL \\"               >> Dockerfile
+echo "      org.label-schema.schema-version=1.0.0-rc.1"         >> Dockerfile
 
 # Finish pre_build hook
 echo "Successfully patched dockerfile"
