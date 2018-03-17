@@ -105,7 +105,7 @@ bot.command('downvote', async (ctx) => {
         const record = await vote.save();
         return ctx.reply(`This is a downvote for ${record.get('votee')}`);
     } catch (err) {
-        console.debug(err);
+        logger.error(err);
     }
 });
 
@@ -113,12 +113,16 @@ bot.command('downvote', async (ctx) => {
  * Handle /results command.
  */
 bot.command('results', async (ctx) => {
-    const records = await Vote.byChatId( ctx.chat.id );
-    logger.debug(JSON.stringify(records));
-    const results = _.sortBy( _.map(records.models, 'attributes'), [o => o.downvotes - o.upvotes, o => -o.upvotes, 'votee']);
-    logger.debug(JSON.stringify(results));
-    const display = _.reduce(results, (acc, o) => `${acc}\n${o.votee}: ${o.upvotes - o.downvotes}`, '');
-    return ctx.reply(`${display}`);
+    try {
+        const records = await Vote.byChatId( ctx.chat.id );
+        logger.debug(JSON.stringify(records));
+        const results = _.sortBy( _.map(records.models, 'attributes'), [o => o.downvotes - o.upvotes, o => -o.upvotes, 'votee']);
+        logger.debug(JSON.stringify(results));
+        const display = _.reduce(results, (acc, o) => `${acc}\n${o.votee}: ${o.upvotes - o.downvotes}`, '');
+        return ctx.reply(`${display}` || 'No results to display for now');
+    } catch (err) {
+        logger.error(err);
+    }
 });
 
 // Handle message update
