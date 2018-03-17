@@ -14,7 +14,7 @@ logger.configure({
     level: process.env.LOG_LEVEL || 'info',
     format: logger.format.combine(
         logger.format.splat(),
-        logger.format.printf((info) => `${info.level}: ${info.message}`),
+        logger.format.simple()
     ),
     transports: [
         new logger.transports.Console(),

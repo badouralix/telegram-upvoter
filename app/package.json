@@ -25,7 +25,7 @@
     "pg": "^7.4.1",
     "telegraf": "^3.19.0",
     "wait-on": "^2.1.0",
-    "winston": "^3.0.0-rc2"
+    "winston": "^3.0.0-rc3"
   },
   "devDependencies": {
     "nodemon": "^1.17.1"
