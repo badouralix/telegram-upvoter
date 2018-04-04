@@ -24,3 +24,8 @@ Delete containers, networks, images and volumes:
 ```bash
 docker-compose down --rmi local --volumes
 ```
+
+## Features
+
+New messages and edited messages are handled. Only deleted messages cannot be
+handled as no API endpoint exists for that case.

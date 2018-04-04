@@ -15,6 +15,10 @@ const { Vote } = require('./model');
 
 const bot = new Telegraf(process.env.BOT_TOKEN, {username: process.env.BOT_USERNAME});
 
+/**
+ * Middlewares
+ *****************************************************************************/
+
 // Middleware to provide argc and argv
 bot.use((ctx, next) => {
     if (ctx.message) {
@@ -53,20 +57,20 @@ bot.use((ctx, next) => {
 });
 
 /**
- * Handle /start command
- */
+ * Bot functions
+ *****************************************************************************/
+
+// Handle /start command
 bot.start((ctx) =>
     ctx.reply('Add me to a Telegram group.')
 );
 
-/**
- * Handle /upvote command (original and forward)
- */
+// Handle /upvote command (original and forward)
 bot.command('upvote', async (ctx) => {
     // Check parameters
     if (ctx.param.argc !== 2 || ! ctx.param.argv[1].match(/^@?\w+$/)) {
         console.debug('Invalid parameters detected');
-        return ctx.replyWithMarkdown('Usage: _/upvote @username_');
+        return ctx.replyWithMarkdown('Usage: _/upvote @username_', {reply_to_message_id: ctx.message.message_id});
     }
 
     const vote = new Vote();
@@ -78,20 +82,18 @@ bot.command('upvote', async (ctx) => {
 
     try {
         const record = await vote.save();
-        return ctx.reply(`This is an upvote for ${record.get('votee')}`);
+        return ctx.reply(`This is an upvote for ${record.get('votee')}`, {reply_to_message_id: ctx.message.message_id});
     } catch (err) {
         console.debug(err);
     }
 });
 
-/**
- * Handle /downvote command (original and forward)
- */
+// Handle /downvote command (original and forward)
 bot.command('downvote', async (ctx) => {
     // Check parameters
     if (ctx.param.argc !== 2 || ! ctx.param.argv[1].match(/^@?\w+$/)) {
         console.debug('Invalid parameters detected');
-        return ctx.replyWithMarkdown('Usage: _/downvote @username_');
+        return ctx.replyWithMarkdown('Usage: _/downvote @username_', {reply_to_message_id: ctx.message.message_id});
     }
 
     const vote = new Vote();
@@ -103,15 +105,13 @@ bot.command('downvote', async (ctx) => {
 
     try {
         const record = await vote.save();
-        return ctx.reply(`This is a downvote for ${record.get('votee')}`);
+        return ctx.reply(`This is a downvote for ${record.get('votee')}`, {reply_to_message_id: ctx.message.message_id});
     } catch (err) {
         logger.error(err);
     }
 });
 
-/**
- * Handle /results command.
- */
+// Handle /results command.
 bot.command('results', async (ctx) => {
     try {
         const records = await Vote.byChatId( ctx.chat.id );
@@ -147,7 +147,5 @@ bot.on('edited_message', async (ctx) => {
                           .save({votee: ctx.param.argv[1].replace(/^@?(\w+)$/, '$1'), type: 'downvote'}, {method: 'update', patch: true});
     }
 });
-
-// Handle message delete
 
 module.exports = { bot };
