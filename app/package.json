@@ -20,7 +20,7 @@
   "homepage": "https://github.com/badouralix/telegram-upvoter#readme",
   "dependencies": {
     "bookshelf": "^0.12.1",
-    "knex": "^0.19.5",
+    "knex": "^2.4.0",
     "lodash": "^4.17.21",
     "pg": "^7.12.1",
     "telegraf": "^3.33.3",
